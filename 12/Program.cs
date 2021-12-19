@@ -39,13 +39,37 @@ namespace _12
             var start = caveList.Single(c => c.IsStart);
             var routes = new List<string>();
 
-            FindRoutes(start, "", ref routes);
+            FindRoutesMod(start, "", false, ref routes);
 
-            routes.ForEach(r => 
-                Console.WriteLine(r)
-            );
+            // routes.ForEach(r => 
+            //     Console.WriteLine(r)
+            // );
             Console.WriteLine();
             Console.WriteLine($"Routes: {routes.Count()}");
+        }
+
+        public static void FindRoutesMod(Cave current, string route, bool jockerUsed, ref List<string> routes)
+        {
+            //Console.WriteLine($"R: {route} <- {current.Name} ");
+            if (current.IsEnd)
+            {
+                route += current.Name;
+                routes.Add(route);
+                return;
+            }
+
+            if (current.IsSmallCave && route.Contains($"{current.Name}"))
+            {
+                if (jockerUsed || current.IsStart) return;
+                else jockerUsed = true;
+            }
+
+            route += current.Name + ",";
+
+            foreach (var cave in current.Connected)
+            {
+                FindRoutesMod(cave, route, jockerUsed, ref routes);
+            }
         }
 
         public static void FindRoutes(Cave current, string route, ref List<string> routes)
